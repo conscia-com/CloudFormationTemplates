@@ -1,8 +1,8 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
-  
-  "Description" : "Create a LAMP stack using a single EC2 instance and a local MySQL database for storage. This template demonstrates using the AWS CloudFormation bootstrap scripts to install the packages and files necessary to deploy the Apache web server, PHP and MySQL at instance launch time.",
-  
+
+  "Description" : "Create a VPC stack with public subnet inside it",
+
   "Mappings" : {
 
     "SubnetConfig" : {
@@ -12,11 +12,11 @@
 
   },
 
-   
-    
-  "Resources" : {     
-      
-   
+
+
+  "Resources" : {
+
+
     "VPC" : {
       "Type" : "AWS::EC2::VPC",
       "Properties" : {
@@ -34,7 +34,7 @@
       "Type" : "AWS::EC2::Subnet",
       "Properties" : {
         "VpcId" : { "Ref" : "VPC" },
-         "AvailabilityZone": { "Fn::Select": [ "0", { "Fn::GetAZs": "" } ] },
+        "AvailabilityZone": { "Fn::Select": [ "0", { "Fn::GetAZs": "" } ] },
         "CidrBlock" : { "Fn::FindInMap" : [ "SubnetConfig", "Public", "CIDR" ]},
         "Tags" : [
           { "Key" : "Application", "Value" : { "Ref" : "AWS::StackName" } },
@@ -55,11 +55,11 @@
     },
 
     "GatewayToInternet" : {
-       "Type" : "AWS::EC2::VPCGatewayAttachment",
-       "Properties" : {
-         "VpcId" : { "Ref" : "VPC" },
-         "InternetGatewayId" : { "Ref" : "InternetGateway" }
-       }
+      "Type" : "AWS::EC2::VPCGatewayAttachment",
+      "Properties" : {
+        "VpcId" : { "Ref" : "VPC" },
+        "InternetGatewayId" : { "Ref" : "InternetGateway" }
+      }
     },
 
     "PublicRouteTable" : {
@@ -180,33 +180,30 @@
     }
 
 
-   
 
-         
+
+
   },
   "Outputs" : {
     "VPCID" : {
       "Description" : "what is vpcId",
-      "Value" : {
-                 "VPCId" : {"Ref" : "VPC"}
-      },
+      "Value" : {"Ref" : "VPC"}
+    ,
       "Export" : {
-      "Name" : {"Fn::Sub": "${AWS::StackName}-VPCID" }
-    }
+        "Name" : {"Fn::Sub": "${AWS::StackName}-VPCID" }
+      }
 
     },
     "SubnetID" : {
       "Description" : "what is SubnetId",
-      "Value" : {
-                 "SubnetId" :{"Ref" : "PublicSubnet"} 
-      },
+      "Value" :{"Ref" : "PublicSubnet"},
       "Export" : {
-      "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetID" }
-    }
+        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetID" }
+      }
 
     }
-    
-                  
+
+
 
   }
 }
